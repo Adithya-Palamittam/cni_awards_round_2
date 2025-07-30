@@ -39,7 +39,7 @@ const Login = () => {
 
     // Fetch user record from users_table
     const { data: userMeta, error: metaError } = await supabase
-      .from("users_table")
+      .from("users_table_round_2")
       .select("last_visited_page, is_completed, agreed_terms, is_admin")
       .eq("uid", user.id)
       .single();

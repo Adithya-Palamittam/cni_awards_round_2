@@ -32,7 +32,7 @@ export default function UserTable() {
 
   const fetchUsers = async () => {
     const { data, error } = await supabase
-      .from("users_table")
+      .from("users_table_round_2")
       .select("uid, email, is_completed")
       .neq("email", "admin@3cctech.com");
     if (!error && data) setUsers(data);
@@ -41,7 +41,7 @@ export default function UserTable() {
   const resetUser = async (uid: string) => {
     // Reset user table
     const { error: updateError } = await supabase
-      .from("users_table")
+      .from("users_table_round_2")
       .update({
         is_completed: false,
         agreed_terms: false,
@@ -56,10 +56,10 @@ export default function UserTable() {
     }
 
     // Delete from ratings_table
-    await supabase.from("ratings_table").delete().eq("user_id", uid);
+    await supabase.from("ratings_table_round_2").delete().eq("user_id", uid);
 
     // Delete from user_selection_table
-    await supabase.from("user_selection_table").delete().eq("user_id", uid);
+    await supabase.from("user_selection_table_round_2").delete().eq("user_id", uid);
 
     // Refresh local UI
     setUsers(prev =>

@@ -10,13 +10,13 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       // Total users
       const { count: userCount } = await supabase
-        .from("users_table")
+        .from("users_table_round_2")
         .select("*", { count: "exact", head: true });
       setTotalUsers(userCount || 0);
 
       // Total ratings
       const { count: ratingCount } = await supabase
-        .from("ratings_table")
+        .from("ratings_table_round_2")
         .select("*", { count: "exact", head: true });
       setTotalRatings(ratingCount || 0);
     };

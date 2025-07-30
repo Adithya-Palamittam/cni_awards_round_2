@@ -30,8 +30,8 @@ const RatingPage = () => {
       if (!user?.id) return;
 
       const { data, error } = await supabase
-        .from("user_selection_table")
-        .select("selected_regional_restaurants, selected_national_restaurants, restaurant_ratings")
+        .from("user_selection_table_round_2")
+        .select("selected_national_restaurants, restaurant_ratings")
         .eq("user_id", user.id)
         .single();
 
@@ -40,20 +40,18 @@ const RatingPage = () => {
         return;
       }
 
-      const regionalList: Restaurant[] = data?.selected_regional_restaurants || [];
       const nationalList: Restaurant[] = data?.selected_national_restaurants || [];
-      
-      // Sort by city, then name
-      const all: Restaurant[] = [...regionalList, ...nationalList].sort((a, b) => {
-      const cityCompare = a.city.localeCompare(b.city);
-      return cityCompare !== 0 ? cityCompare : a.name.localeCompare(b.name);
-    });
 
-      setRestaurants(all);
+      const sortedRestaurants = nationalList.sort((a, b) => {
+        const cityCompare = a.city.localeCompare(b.city);
+        return cityCompare !== 0 ? cityCompare : a.name.localeCompare(b.name);
+      });
+
+      setRestaurants(sortedRestaurants);
       const savedRatings: Record<string, Rating> = data?.restaurant_ratings || {};
       setRatings(savedRatings);
 
-      const firstUnratedIndex = all.findIndex((r) => {
+      const firstUnratedIndex = sortedRestaurants.findIndex((r) => {
         const rating = savedRatings[r.id];
         return !rating || rating.food === 0 || rating.service === 0 || rating.ambience === 0;
       });
@@ -101,12 +99,10 @@ const RatingPage = () => {
     }));
   };
 
-  const saveRatingsToSupabase = async (
-    updatedRatings: Record<string, Rating>
-  ) => {
+  const saveRatingsToSupabase = async (updatedRatings: Record<string, Rating>) => {
     if (!user) return;
     const { error } = await supabase
-      .from("user_selection_table")
+      .from("user_selection_table_round_2")
       .update({ restaurant_ratings: updatedRatings })
       .eq("user_id", user.id);
 
@@ -139,73 +135,62 @@ const RatingPage = () => {
 
   const NavigationButtons = ({ isMobile = false }: { isMobile?: boolean }) => (
     <div className="flex justify-between mx-6">
-<span
-  onClick={currentIndex === 0 ? undefined : goPrevious}
-  className={`inline-flex items-center gap-2 font-medium ${
-    currentIndex === 0
-      ? 'text-gray-400 cursor-not-allowed'
-      : 'text-black cursor-pointer hover:text-gray-800'
-  }`}
->
-  ← Previous
-</span>
-
+      <span
+        onClick={currentIndex === 0 ? undefined : goPrevious}
+        className={`inline-flex items-center gap-2 font-medium ${
+          currentIndex === 0
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-black cursor-pointer hover:text-gray-800"
+        }`}
+      >
+        ← Previous
+      </span>
 
       {canSubmit ? (
-<span
-  onClick={isCurrentRated ? handleSubmit : undefined}
-  className={`inline-block font-medium ${
-    isCurrentRated
-      ? 'text-black cursor-pointer hover:text-gray-800'
-      : 'text-gray-400 cursor-not-allowed'
-  }  `}
->
-  Submit
-</span>
-
+        <span
+          onClick={isCurrentRated ? handleSubmit : undefined}
+          className={`inline-block font-medium ${
+            isCurrentRated
+              ? "text-black cursor-pointer hover:text-gray-800"
+              : "text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Submit
+        </span>
       ) : (
         <span
-  onClick={isCurrentRated ? goNext : undefined}
-  className={`inline-flex items-center ${isCurrentRated ? 'text-blue-600 cursor-pointer' : 'text-gray-400 cursor-not-allowed'}  rounded`}
->
-  Next →
-</span>
-
+          onClick={isCurrentRated ? goNext : undefined}
+          className={`inline-flex items-center ${
+            isCurrentRated
+              ? "text-blue-600 cursor-pointer"
+              : "text-gray-400 cursor-not-allowed"
+          } rounded`}
+        >
+          Next →
+        </span>
       )}
     </div>
   );
 
-return (
-  <div className="min-h-screen flex flex-col bg-white">
-    {/* Header with Hamburger Menu */}
-    <div className="flex justify-end items-center pt-2 pr-2">
-      <HamburgerMenu />
-    </div>
-
-    {/* Main Content */}
-    <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-      
-      {/* Mobile Layout */}
-      <div className="block md:hidden flex-1 px-4 pb-4 overflow-y-auto">
-        <img src="/logo.png" alt="TP Awards Logo" className="mx-auto mb-6 w-[10rem] h-[10rem] object-contain" />
-        <p className="text-lg mb-6 text-center">Rate the top 15 restaurants you selected</p>
-
-        <RestaurantRatingCard
-          restaurant={currentRestaurant}
-          rating={currentRating}
-          currentIndex={currentIndex}
-          totalCount={restaurants.length}
-          onRatingChange={updateRating}
-          isMobile={true}
-        />
-        <NavigationButtons isMobile={true} />
+  return (
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Header */}
+      <div className="flex justify-end items-center pt-2 pr-2">
+        <HamburgerMenu />
       </div>
 
-      {/* Desktop Layout */}
-      <div className="hidden md:flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-md text-center mb-14">
-          <img src="/logo.png" alt="TP Awards Logo" className="mx-auto mb-6 w-[12rem] h-[12rem] object-contain" />
-          <p className="text-lg mb-10">Rate the top 15 restaurants you selected</p>
+      {/* Content */}
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {/* Mobile Layout */}
+        <div className="block md:hidden flex-1 px-4 pb-4 overflow-y-auto">
+          <img
+            src="/logo.png"
+            alt="TP Awards Logo"
+            className="mx-auto mb-6 w-[10rem] h-[10rem] object-contain"
+          />
+          <p className="text-lg mb-6 text-center">
+            Rate the top 15 restaurants you selected
+          </p>
 
           <RestaurantRatingCard
             restaurant={currentRestaurant}
@@ -213,19 +198,41 @@ return (
             currentIndex={currentIndex}
             totalCount={restaurants.length}
             onRatingChange={updateRating}
+            isMobile={true}
           />
-          <NavigationButtons />
+          <NavigationButtons isMobile={true} />
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:flex flex-1 items-center justify-center px-4">
+          <div className="w-full max-w-md text-center mb-14">
+            <img
+              src="/logo.png"
+              alt="TP Awards Logo"
+              className="mx-auto mb-6 w-[12rem] h-[12rem] object-contain"
+            />
+            <p className="text-lg mb-10">
+              Rate the top 15 restaurants you selected
+            </p>
+
+            <RestaurantRatingCard
+              restaurant={currentRestaurant}
+              rating={currentRating}
+              currentIndex={currentIndex}
+              totalCount={restaurants.length}
+              onRatingChange={updateRating}
+            />
+            <NavigationButtons />
+          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-black text-white text-center py-3 text-xs md:fixed md:bottom-0 md:left-0 md:right-0">
+        <p>© 2025 Condé Nast India</p>
+      </footer>
     </div>
-
-    {/* Footer */}
-    <footer className="bg-black text-white text-center py-3 text-xs md:fixed md:bottom-0 md:left-0 md:right-0">
-      <p>© 2025 Condé Nast India</p>
-    </footer>
-  </div>
-);
-
+  );
 };
 
 export default RatingPage;

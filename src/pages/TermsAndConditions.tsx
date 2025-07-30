@@ -18,7 +18,7 @@ const TermsAndConditions = () => {
       if (!user) return navigate("/");
 
       const { data, error } = await supabase
-        .from("users_table")
+        .from("users_table_round_2")
         .select("agreed_terms")
         .eq("uid", user.id)
         .single();
@@ -42,9 +42,9 @@ const handleProceed = async () => {
   }
 
   if (agreed) {
-    // 1. Update agreed_terms in users_table
+    // 1. Update agreed_terms in users_table_round_2")
     const { error: updateError } = await supabase
-      .from("users_table")
+      .from("users_table_round_2")
       .update({ agreed_terms: true })
       .eq("uid", user.id);
 

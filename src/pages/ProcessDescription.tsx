@@ -33,16 +33,15 @@ const ProcessDescription = () => {
             <div>
               <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-1 md:mb-2">Step 1</h2>
               <p className="text-gray-700 leading-snug">
-                Choose 10 favourite restaurants from your region.
+                The top 100 restaurants have been chosen based on ratings by 80 jury members across 10 regions of India. Please
+              pick your 15 favourites from the list
               </p>
             </div>
 
             <div>
               <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-1 md:mb-2">Step 2</h2>
               <p className="text-gray-700 leading-snug mb-2">
-                Pick 5 more restaurants. Here is your chance to nominate
-                restaurants from outside your region. Alternatively, you
-                can include more from your region.
+                Once your list of 15 is ready, proceed to the final stage to rate these for Food, Service and Ambience.
               </p>
               {/* <p className="text-gray-700 leading-snug">
                 If there's a restaurant that's not in our list you can add it
@@ -51,14 +50,14 @@ const ProcessDescription = () => {
             </div>
 
             <div>
-              <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-1 md:mb-2">Step 3</h2>
+              {/* <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-1 md:mb-2">Step 3</h2>
               <p className="text-gray-700 leading-snug mb-4 md:mb-6">
                 Once your list of 15 is ready, proceed to the final stage to
                 rate these for Food, Service and Ambience.
-              </p>
+              </p> */}
 
               <Button
-                onClick={() => navigate("/regions")}
+                onClick={() => navigate("/national-selection")}
                 className="bg-black text-white text-md px-6 md:py-2 rounded hover:bg-gray-800"
               >
                 Proceed

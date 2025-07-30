@@ -7,7 +7,7 @@ export default function RatingsTable() {
   useEffect(() => {
     const fetchRatings = async () => {
       const { data, error } = await supabase
-        .from('ratings_table')
+        .from('ratings_table_round_2')
         .select('user_id, restaurant_id, food_rating, service_rating, ambience_rating,restaurant_name');
 
       if (!error) setRatings(data);

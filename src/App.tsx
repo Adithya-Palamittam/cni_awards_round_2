@@ -62,8 +62,8 @@ const App = () => {
               <Route element={<AuthGuard />}>
                 <Route path="/terms" element={<TermsAndConditions />} />
                 <Route path="/process" element={<ProcessDescription />} />
-                <Route path="/regions" element={<VotingRegions />} />
-                <Route path="/regional-selection" element={<RegionalSelection />} />
+                {/* <Route path="/regions" element={<VotingRegions />} /> */}
+                {/* <Route path="/regional-selection" element={<RegionalSelection />} /> */}
                 <Route path="/national-selection" element={<NationalSelection />} />
                 <Route path="/restaurant-review" element={<RestaurantReview />} />
                 <Route path="/rating" element={<RatingPage />} />
