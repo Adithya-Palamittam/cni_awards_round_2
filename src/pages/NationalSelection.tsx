@@ -32,7 +32,7 @@ const NationalSelection = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       const { data, error } = await supabase
-        .from("restaurants_table")
+        .from("restaurants_table_round_2")
         .select("*")
         .or("created_by_jury.is.null,created_by_jury.eq.false");
 

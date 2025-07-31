@@ -18,7 +18,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const { data, error: userError } = await supabase
         .from("users_table_round_2")
         .select(
-          `*, region:assigned_region (region_id, region_name, display_text, image)`
+          `*`
         )
         .eq("uid", user.id)
         .single();
