@@ -22,7 +22,7 @@ const NationalSelection = () => {
   const { userData } = useUser();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
-  const [selectedCity, setSelectedCity] = useState("All");
+  const [selectedCity, setSelectedCity] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [restaurantsLoaded, setRestaurantsLoaded] = useState(false);
 
@@ -102,6 +102,8 @@ const NationalSelection = () => {
     str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
   const filteredRestaurants = restaurants.filter((restaurant) => {
+    if (!selectedCity) return false;
+
     const normalizedSearch = normalize(searchTerm);
     const normalizedName = normalize(restaurant.name);
     const normalizedCity = normalize(restaurant.city);
@@ -110,10 +112,11 @@ const NationalSelection = () => {
     const matchesSearch = normalizedName.includes(normalizedSearch);
 
     const matchesCity =
-      !selectedCity || normalizedSelectedCity === "all" || normalizedCity === normalizedSelectedCity;
+      normalizedSelectedCity === "all" || normalizedCity === normalizedSelectedCity;
 
     return matchesCity && matchesSearch;
   });
+
 
 
   const handleRestaurantToggle = (restaurant: Restaurant) => {
@@ -150,7 +153,7 @@ const NationalSelection = () => {
           <hr className="border-t border-gray-300 mb-2 md:mb-4" />
 
           {/* ---------- Mobile Layout ---------- */}
-          <div className="block md:hidden flex-1 grid grid-rows-[10%_75%_15%] gap-2 min-h-0">
+          <div className="block md:hidden flex-1 grid grid-rows-[10%_40%_auto] gap-2 min-h-0">
             <RestaurantSearchFilterPhone
               selectedCity={selectedCity}
               onCityChange={setSelectedCity}
