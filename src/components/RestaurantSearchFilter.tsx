@@ -30,6 +30,8 @@ const RestaurantSearchFilter = ({
     onSearchChange("");
   };
 
+  // const allCities = ["All", ...cities.filter(c => c !== "All")];
+  
   return (
     <div className="flex gap-4 mb-4">
       <Select value={selectedCity} onValueChange={handleCityChange}>

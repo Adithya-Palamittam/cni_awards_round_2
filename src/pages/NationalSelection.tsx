@@ -22,7 +22,7 @@ const NationalSelection = () => {
   const { userData } = useUser();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [restaurantsLoaded, setRestaurantsLoaded] = useState(false);
 
@@ -101,16 +101,20 @@ const NationalSelection = () => {
   const normalize = (str: string) =>
     str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-  const filteredRestaurants = restaurants.filter(restaurant => {
+  const filteredRestaurants = restaurants.filter((restaurant) => {
     const normalizedSearch = normalize(searchTerm);
     const normalizedName = normalize(restaurant.name);
     const normalizedCity = normalize(restaurant.city);
+    const normalizedSelectedCity = normalize(selectedCity);
 
-    const matchesCity = selectedCity ? normalizedCity === normalize(selectedCity) : false;
-    const matchesSearch = normalizedSearch ? normalizedName.includes(normalizedSearch) : true;
+    const matchesSearch = normalizedName.includes(normalizedSearch);
 
-    return (selectedCity && matchesCity && matchesSearch) || (searchTerm && matchesSearch);
+    const matchesCity =
+      !selectedCity || normalizedSelectedCity === "all" || normalizedCity === normalizedSelectedCity;
+
+    return matchesCity && matchesSearch;
   });
+
 
   const handleRestaurantToggle = (restaurant: Restaurant) => {
     const isSelected = selectedRestaurants.some(r => r.id === restaurant.id);
@@ -131,7 +135,7 @@ const NationalSelection = () => {
     navigate("/restaurant-review");
   };
 
-  const cities = [...new Set(restaurants.map(r => r.city))].sort();
+  const cities = ["All", ...new Set(restaurants.map(r => r.city))].sort();
 
   return (
     <div className="h-screen flex flex-col bg-white">

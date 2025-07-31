@@ -35,7 +35,11 @@ const RestaurantList = ({
       
       <div className="flex-1 overflow-y-scroll scrollbar-thumb-gray-300 scrollbar-track-gray-100 scrollbar-thin">
         {[...restaurants]
-          .sort((a, b) => a.name.localeCompare(b.name))
+          .sort((a, b) => {
+    const cityCompare = a.city.localeCompare(b.city);
+    if (cityCompare !== 0) return cityCompare;
+    return a.name.localeCompare(b.name);
+  })
           .map(restaurant => (
           <div key={restaurant.id} className="grid grid-cols-[25%_60%_auto] p-2 border-b border-gray-100 hover:bg-gray-50">
             <div className="break-words whitespace-normal">{restaurant.city}</div>
