@@ -25,7 +25,7 @@ useEffect(() => {
 
     if (ALLOWED_PATHS.includes(location.pathname)) {
       await supabase
-        .from("users_table")
+        .from("users_table_round_2")
         .update({ last_visited_page: location.pathname })
         .eq("uid", user.id);
     }

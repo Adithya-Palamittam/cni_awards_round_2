@@ -25,7 +25,7 @@ const AuthGuard = ({ adminOnly = false }: AuthGuardProps) => {
       }
 
       const { data: userRecord, error: dbError } = await supabase
-        .from("users_table")
+        .from("users_table_round_2")
         .select("is_completed, is_admin")
         .eq("uid", user.id)
         .single();

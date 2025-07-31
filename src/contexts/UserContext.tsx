@@ -10,34 +10,22 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
       if (error || !user) return;
 
       setUser(user);
 
       const { data, error: userError } = await supabase
         .from("users_table_round_2")
-        .select(
-          `*`
-        )
+        .select("*")
         .eq("uid", user.id)
         .single();
 
       if (!userError) {
-        const regionId = data?.assigned_region;
-        const { data: cities } = await supabase
-          .from("cities_table")
-          .select("city_name")
-          .eq("region_id", regionId);
-
-        // Fetch display_text and image from regions_table
-        const { data: regionDetails } = await supabase
-          .from("regions_table")
-          .select("display_text, image")
-          .eq("region_id", regionId)
-          .single();
-
-        setUserData({ ...data, cities, region_display_text: regionDetails?.display_text, region_image: regionDetails?.image });
+        setUserData(data);
       }
     };
 
