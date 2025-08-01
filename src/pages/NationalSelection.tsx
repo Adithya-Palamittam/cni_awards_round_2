@@ -153,7 +153,9 @@ const NationalSelection = () => {
           <hr className="border-t border-gray-300 mb-2 md:mb-4" />
 
           {/* ---------- Mobile Layout ---------- */}
-          <div className="block md:hidden flex-1 grid grid-rows-[10%_40%_auto] gap-2 min-h-0">
+        <div className="block md:hidden flex-1 grid grid-rows-[10%_40%_auto] gap-2 min-h-0">
+          {/* Search + Filter */}
+          <div className="row-span-1 min-h-0">
             <RestaurantSearchFilterPhone
               selectedCity={selectedCity}
               onCityChange={setSelectedCity}
@@ -161,32 +163,50 @@ const NationalSelection = () => {
               onSearchChange={setSearchTerm}
               cities={cities}
             />
+          </div>
 
+          {/* Restaurant List */}
+          <div className="row-span-1 min-h-0 rounded-lg overflow-hidden bg-gray-100">
             <RestaurantListPhone
               restaurants={filteredRestaurants}
               selectedRestaurants={selectedRestaurants}
               onRestaurantToggle={handleRestaurantToggle}
-              maxSelections={MAX_SELECTION}
+              maxSelections={15}
             />
+          </div>
 
-            <div className="bg-gray-300 flex flex-col -mx-4">
-              <div className="text-sm text-center py-1">Your Selection</div>
+          {/* Add Custom Restaurant */}
+          {/* <p className="row-span-1 min-h-0 text-center text-sm">Want to add a restaurant that is not on this list?</p>
+          <div className="row-span-1 min-h-0">
+            <AddRestaurantDialogPhone
+              cities={cities}
+              selectedRestaurants={selectedRestaurants}
+              onAddRestaurant={addCustomRestaurant}
+              maxSelections={5}
+            />
+          </div> */}
+
+          {/* Selected Restaurants Display + Done Button */}
+          <div className="row-span-1 min-h-0 flex flex-col -mx-4 bg-gray-300">
+            <div className="text-sm font-semibold text-center py-1 shrink-0">Your Selection</div>
+            <div className="flex-1 min-h-0">
               <SelectedRestaurantListPhone
                 selectedRestaurants={selectedRestaurants}
                 onRemoveRestaurant={removeRestaurant}
-                maxSelections={MAX_SELECTION}
+                maxSelections={15}
               />
-              <div className="flex justify-center mt-2 px-4 pb-2">
-                <Button
-                  onClick={handleProceed}
-                  disabled={!canProceed}
-                  className="bg-black text-xs h-6 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Done
-                </Button>
-              </div>
+            </div>
+            <div className="shrink-0 flex items-center justify-center mt-2 px-4 pb-2">
+              <Button
+                onClick={handleProceed}
+                disabled={!canProceed}
+                className="bg-black text-xs h-6 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Done
+              </Button>
             </div>
           </div>
+        </div>
 
           {/* ---------- Desktop Layout ---------- */}
           <div className="hidden md:flex gap-6 flex-1 overflow-hidden">
