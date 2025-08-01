@@ -49,7 +49,7 @@ const SelectedRestaurantListPhone = ({
       <div className="p-1 text-center text-sm shrink-0">
         {selectedRestaurants.length < maxSelections ? (
           <>
-            Please add <span className="text-red-500 font-semibold">{maxSelections - selectedRestaurants.length}</span> {maxSelections - selectedRestaurants.length === 1 ? 'restaurant' : 'restaurants'}
+            Please add <span className="text-red-500 font-semibold">{maxSelections - selectedRestaurants.length}</span> {maxSelections - selectedRestaurants.length === 1 ? 'restaurant.' : 'restaurants.'}
           </>
         ) : (
           <span className="text-green-600 font-semibold">You have added {maxSelections} restaurants.</span>

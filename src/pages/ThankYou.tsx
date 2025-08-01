@@ -22,7 +22,7 @@ const ThankYou = () => {
               Your votes are confidential and
  secure and will crown India’s Top
  50 restaurants of the year. You
- can now close this window
+ can now close this window.
             </p>
 
           </div>

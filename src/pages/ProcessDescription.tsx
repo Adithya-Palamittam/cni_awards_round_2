@@ -34,7 +34,7 @@ const ProcessDescription = () => {
               <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-1 md:mb-2">Step 1</h2>
               <p className="text-gray-700 leading-snug">
                 The top 100 restaurants have been chosen based on ratings by 80 jury members across 10 regions of India. Please
-              pick your 15 favourites from the list
+              pick your 15 favourites from the list.
               </p>
             </div>
 
