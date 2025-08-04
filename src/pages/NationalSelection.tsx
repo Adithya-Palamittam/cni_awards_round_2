@@ -181,7 +181,7 @@ const NationalSelection = () => {
             </div>
 
             <div className="row-span-1 min-h-0 flex flex-col -mx-4 bg-gray-300">
-              <div className="text-sm font-semibold text-center py-1 shrink-0">Your Selection</div>
+              <div className="text-md font-semibold text-center py-1 shrink-0">Your Selection</div>
               <div className="flex-1 min-h-0">
                 <SelectedRestaurantListPhone
                   selectedRestaurants={selectedRestaurants}
@@ -189,11 +189,11 @@ const NationalSelection = () => {
                   maxSelections={MAX_SELECTION}
                 />
               </div>
-              <div className="shrink-0 flex items-center justify-center mt-2 px-4 pb-2">
+              <div className="shrink-0 flex items-center justify-center mt-2 px-4 pb-2 py-1">
                 <Button
                   onClick={handleProceed}
                   disabled={!canProceed}
-                  className="bg-black text-xs h-6 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-black text-sm h-8 px-8 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Done
                 </Button>
