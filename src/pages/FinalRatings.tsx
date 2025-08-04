@@ -252,7 +252,7 @@ const FinalRatings = () => {
         <div className="flex justify-center lg:pb-10">
           <Button
             onClick={handleSubmit}
-            className="bg-green-500 text-white px-8 py-3 rounded hover:bg-green-600"
+            className="bg-green-500 text-white md:text-lg md:py-6 px-8 py-3 rounded hover:bg-green-600"
           >
             Submit your final ratings
           </Button>
