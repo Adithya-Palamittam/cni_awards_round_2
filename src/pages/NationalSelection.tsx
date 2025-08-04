@@ -10,6 +10,8 @@ import RestaurantSearchFilterPhone from "@/components/RestaurantSearchFilterPhon
 import RestaurantListPhone from "@/components/RestaurantListPhone";
 import SelectedRestaurantListPhone from "@/components/SelectedRestaurantListPhone";
 import HamburgerMenu from "@/components/HamburgerMenu";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CheckCircle2 } from "lucide-react";
 
 interface Restaurant {
   id: string;
@@ -25,6 +27,7 @@ const NationalSelection = () => {
   const [selectedCity, setSelectedCity] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [restaurantsLoaded, setRestaurantsLoaded] = useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
 
   const MAX_SELECTION = 15;
 
@@ -117,14 +120,18 @@ const NationalSelection = () => {
     return matchesCity && matchesSearch;
   });
 
-
-
   const handleRestaurantToggle = (restaurant: Restaurant) => {
     const isSelected = selectedRestaurants.some(r => r.id === restaurant.id);
+
     if (isSelected) {
       setSelectedRestaurants(prev => prev.filter(r => r.id !== restaurant.id));
     } else if (selectedRestaurants.length < MAX_SELECTION) {
-      setSelectedRestaurants(prev => [...prev, restaurant]);
+      const newSelection = [...selectedRestaurants, restaurant];
+      setSelectedRestaurants(newSelection);
+
+      if (newSelection.length === MAX_SELECTION) {
+        setSuccessDialogOpen(true);
+      }
     }
   };
 
@@ -143,7 +150,7 @@ const NationalSelection = () => {
   return (
     <div className="h-screen flex flex-col bg-white">
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <div className="flex-1 flex flex-col overflow-hidden px-4 pt-2 md:p-6 md:h-[calc(100vh-48px)]">
+        <div className="flex-1 flex flex-col overflow-hidden px-2 md:px-4 pt-2 md:p-6 md:h-[calc(100vh-48px)]">
           <div className="flex justify-between items-center">
             <h2 className="text-sm md:text-xl md:font-semibold mb-1 text-left pr-4 md:pr-10">
               Choose {MAX_SELECTION} restaurants from anywhere across India.
@@ -153,60 +160,46 @@ const NationalSelection = () => {
           <hr className="border-t border-gray-300 mb-2 md:mb-4" />
 
           {/* ---------- Mobile Layout ---------- */}
-        <div className="block md:hidden flex-1 grid grid-rows-[10%_40%_auto] gap-2 min-h-0">
-          {/* Search + Filter */}
-          <div className="row-span-1 min-h-0">
-            <RestaurantSearchFilterPhone
-              selectedCity={selectedCity}
-              onCityChange={setSelectedCity}
-              searchTerm={searchTerm}
-              onSearchChange={setSearchTerm}
-              cities={cities}
-            />
-          </div>
-
-          {/* Restaurant List */}
-          <div className="row-span-1 min-h-0 rounded-lg overflow-hidden bg-gray-100">
-            <RestaurantListPhone
-              restaurants={filteredRestaurants}
-              selectedRestaurants={selectedRestaurants}
-              onRestaurantToggle={handleRestaurantToggle}
-              maxSelections={15}
-            />
-          </div>
-
-          {/* Add Custom Restaurant */}
-          {/* <p className="row-span-1 min-h-0 text-center text-sm">Want to add a restaurant that is not on this list?</p>
-          <div className="row-span-1 min-h-0">
-            <AddRestaurantDialogPhone
-              cities={cities}
-              selectedRestaurants={selectedRestaurants}
-              onAddRestaurant={addCustomRestaurant}
-              maxSelections={5}
-            />
-          </div> */}
-
-          {/* Selected Restaurants Display + Done Button */}
-          <div className="row-span-1 min-h-0 flex flex-col -mx-4 bg-gray-300">
-            <div className="text-sm font-semibold text-center py-1 shrink-0">Your Selection</div>
-            <div className="flex-1 min-h-0">
-              <SelectedRestaurantListPhone
-                selectedRestaurants={selectedRestaurants}
-                onRemoveRestaurant={removeRestaurant}
-                maxSelections={15}
+          <div className="block md:hidden flex-1 grid grid-rows-[10%_40%_auto] gap-2 min-h-0">
+            <div className="row-span-1 min-h-0">
+              <RestaurantSearchFilterPhone
+                selectedCity={selectedCity}
+                onCityChange={setSelectedCity}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                cities={cities}
               />
             </div>
-            <div className="shrink-0 flex items-center justify-center mt-2 px-4 pb-2">
-              <Button
-                onClick={handleProceed}
-                disabled={!canProceed}
-                className="bg-black text-xs h-6 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Done
-              </Button>
+
+            <div className="row-span-1 min-h-0 rounded-lg overflow-hidden bg-gray-100">
+              <RestaurantListPhone
+                restaurants={filteredRestaurants}
+                selectedRestaurants={selectedRestaurants}
+                onRestaurantToggle={handleRestaurantToggle}
+                maxSelections={MAX_SELECTION}
+              />
+            </div>
+
+            <div className="row-span-1 min-h-0 flex flex-col -mx-4 bg-gray-300">
+              <div className="text-sm font-semibold text-center py-1 shrink-0">Your Selection</div>
+              <div className="flex-1 min-h-0">
+                <SelectedRestaurantListPhone
+                  selectedRestaurants={selectedRestaurants}
+                  onRemoveRestaurant={removeRestaurant}
+                  maxSelections={MAX_SELECTION}
+                />
+              </div>
+              <div className="shrink-0 flex items-center justify-center mt-2 px-4 pb-2">
+                <Button
+                  onClick={handleProceed}
+                  disabled={!canProceed}
+                  className="bg-black text-xs h-6 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Done
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
 
           {/* ---------- Desktop Layout ---------- */}
           <div className="hidden md:flex gap-6 flex-1 overflow-hidden">
@@ -254,6 +247,20 @@ const NationalSelection = () => {
       <footer className="bg-black text-white text-center py-3 text-xs md:fixed md:bottom-0 md:left-0 md:right-0">
         <p>© 2025 Condé Nast India</p>
       </footer>
+
+      {/* ---------- Success Dialog ---------- */}
+      <Dialog open={successDialogOpen} onOpenChange={setSuccessDialogOpen}>
+        <DialogContent className="max-w-md w-[90%] flex flex-col items-center justify-center text-center gap-2 py-4">
+          <CheckCircle2 className="text-green-500 w-16 h-16 mx-auto" />
+          <div className="text-lg font-semibold">15 restaurants added successfully!</div>
+          <button
+            className="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+            onClick={() => setSuccessDialogOpen(false)}
+          >
+            Ok
+          </button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
