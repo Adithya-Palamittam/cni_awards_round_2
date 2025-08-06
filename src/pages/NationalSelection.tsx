@@ -24,7 +24,7 @@ const NationalSelection = () => {
   const { userData } = useUser();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurants, setSelectedRestaurants] = useState<Restaurant[]>([]);
-  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
   const [restaurantsLoaded, setRestaurantsLoaded] = useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);

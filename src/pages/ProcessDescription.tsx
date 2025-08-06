@@ -27,7 +27,7 @@ const ProcessDescription = () => {
           {/* Steps */}
           <div className="space-y-6 text-center text-sm md:text-md">
             <h1 className="text-xl md:text-xl font-semibold text-red-600 mb-4">
-              Give us your 15 favourite restaurants
+              These are India’s Top 100. Now select your favourites
             </h1>
 
             <div>
@@ -35,8 +35,8 @@ const ProcessDescription = () => {
                 Step 1
               </h2>
               <p className="text-gray-700 text-[clamp(1rem,1.05rem,1.125rem)] md:text-md leading-snug">
-                The top 100 restaurants have been chosen based on ratings by 80 jury members across 10 regions of India. Please
-                pick your 15 favourites from the list.
+                The top 100 restaurants have been chosen based on ratings by 80 jury members from across 10 regions of India. 
+                Please scroll down the list–your city and beyond–and select your favourite 15.
               </p>
             </div>
 
@@ -45,7 +45,7 @@ const ProcessDescription = () => {
                 Step 2
               </h2>
               <p className="text-gray-700 text-[clamp(1rem,1.05rem,1.125rem)] md:text-md leading-snug mb-2">
-                Once your list of 15 is ready, proceed to the final stage to rate these for Food, Service and Ambience.
+               Once your list of 15 is ready, proceed to the final stage to rate these for Food, Service and Ambience.
               </p>
             </div>
 
