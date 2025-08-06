@@ -53,19 +53,23 @@ const handleProceed = async () => {
       return;
     }
 
-    // 2. Insert empty record into user_selection_table
-    const { error: insertError } = await supabase
+    // 2. Upsert record into user_selection_table
+    const { error: upsertError } = await supabase
       .from("user_selection_table")
-      .insert([
+      .upsert( // Change from .insert() to .upsert()
         {
           user_id: user.id,
           selected_regional_restaurants: [],
           selected_national_restaurants: [],
         },
-      ]);
+        {
+          onConflict: 'user_id',       // Specify the column with the unique constraint
+          ignoreDuplicates: true,      // Key change: If the row exists, do nothing
+        }
+      );
 
-    if (insertError) {
-      console.error("Failed to initialize user selection:", insertError.message);
+    if (upsertError) {
+      console.error("Failed to initialize user selection:", upsertError.message);
       return;
     }
 

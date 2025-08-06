@@ -36,7 +36,7 @@ const RestaurantListPhone = ({
           .sort((a, b) => a.name.localeCompare(b.name))
           .map(restaurant => (
           <div key={restaurant.id} className="grid grid-cols-[55%_35%_auto] p-1 px-2 border-b border-gray-300 hover:bg-gray-50">
-            <div className="break-words whitespace-normal pl-2">{restaurant.name}</div>
+            <div className="break-words whitespace-normal pl-2 pr-2">{restaurant.name}</div>
             <div className="break-words whitespace-normal">{restaurant.city}</div>
             <div className="flex items-center justify-center pr-1">
               <Checkbox
