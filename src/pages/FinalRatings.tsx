@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Edit2 } from "lucide-react";
+import { Edit2, CircleAlert } from "lucide-react";
 import { useUser } from "@/contexts/UserContext";
 import { supabase } from "@/lib/supabaseClient";
 import HamburgerMenu from "@/components/HamburgerMenu";
@@ -25,6 +25,10 @@ const FinalRatings = () => {
   const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
   const [editingRating, setEditingRating] = useState<Rating>({ food: 0, service: 0, ambience: 0 });
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const [errorDialogOpen, setErrorDialogOpen] = useState(false);
+  const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -43,18 +47,38 @@ const FinalRatings = () => {
         return;
       }
 
-      const allRestaurants = data?.selected_national_restaurants || [];
-      allRestaurants.sort((a: Restaurant, b: Restaurant) => {
+      const allRestaurants: Restaurant[] = data?.selected_national_restaurants || [];
+      const restaurantRatings: Record<string, Rating> = data?.restaurant_ratings || {};
+
+      // Sort restaurants for display
+      allRestaurants.sort((a, b) => {
         const cityCompare = a.city.localeCompare(b.city);
         return cityCompare !== 0 ? cityCompare : a.name.localeCompare(b.name);
       });
 
       setRestaurants(allRestaurants);
-      setRatings(data?.restaurant_ratings || {});
+      setRatings(restaurantRatings);
+
+      // === Data integrity check ===
+      const has15Restaurants = allRestaurants.length === 15;
+      const has15Ratings = Object.keys(restaurantRatings).length === 15;
+
+      const anyInvalidRating = allRestaurants.some(r => {
+        const rating = restaurantRatings[r.id];
+        return !rating || rating.food < 1 || rating.service < 1 || rating.ambience < 1;
+      });
+
+      if (!has15Restaurants) {
+        setRedirectPath("/national-selection");
+        setErrorDialogOpen(true);
+      } else if (!has15Ratings || anyInvalidRating) {
+        setRedirectPath("/rating");
+        setErrorDialogOpen(true);
+      }
     };
 
     fetchData();
-  }, [user]);
+  }, [user, navigate]);
 
   const handleEditRating = (restaurant: Restaurant) => {
     setEditingRestaurant(restaurant);
@@ -121,53 +145,97 @@ const FinalRatings = () => {
       </div>
     );
   };
+const handleSubmit = async () => {
+  if (!user?.id) {
+    alert("User not logged in.");
+    return;
+  }
 
-  const handleSubmit = async () => {
-    if (!user?.id) {
-      alert("User not logged in.");
-      return;
-    }
-
+  try {
+    // Get latest ratings from DB
     const { data, error } = await supabase
       .from("user_selection_table_round_2")
-      .select("restaurant_ratings")
+      .select("selected_national_restaurants, restaurant_ratings")
       .eq("user_id", user.id)
       .single();
 
     if (error) {
-      console.error("Failed to fetch latest ratings:", error.message);
-      alert("Failed to fetch latest ratings. Please try again.");
+      throw new Error("Failed to fetch latest ratings: " + error.message);
+    }
+
+    const allRestaurants: Restaurant[] = data?.selected_national_restaurants || [];
+    const latestRatings: Record<string, Rating> = data?.restaurant_ratings || {};
+
+    // Validation
+    const has15Restaurants = allRestaurants.length === 15;
+    const has15Ratings = Object.keys(latestRatings).length === 15;
+    const anyInvalidRating = allRestaurants.some(r => {
+      const rating = latestRatings[r.id];
+      return !rating || rating.food < 1 || rating.service < 1 || rating.ambience < 1;
+    });
+
+    if (!has15Restaurants) {
+      alert("You must select 15 restaurants before submitting.");
+      navigate("/national-selection");
       return;
     }
 
-    const latestRatings = data?.restaurant_ratings || {};
+    if (!has15Ratings || anyInvalidRating) {
+      alert("Please rate all restaurants with a score from 1 to 5 before submitting.");
+      navigate("/rating");
+      return;
+    }
 
-    const entries = restaurants.map((restaurant) => ({
+    // Prepare entries for insert
+    const entries = allRestaurants.map((restaurant) => ({
       user_id: user.id,
       restaurant_id: restaurant.id,
       restaurant_name: restaurant.name,
-      food_rating: latestRatings[restaurant.id]?.food || 0,
-      service_rating: latestRatings[restaurant.id]?.service || 0,
-      ambience_rating: latestRatings[restaurant.id]?.ambience || 0,
+      food_rating: latestRatings[restaurant.id].food,
+      service_rating: latestRatings[restaurant.id].service,
+      ambience_rating: latestRatings[restaurant.id].ambience,
       is_complete: true
     }));
 
+    // Step 1: Insert into ratings table
     const { error: insertError } = await supabase.from("ratings_table_round_2").insert(entries);
-
     if (insertError) {
-      console.error("Error submitting ratings:", insertError.message);
-      alert("There was an error submitting your ratings. Please try again.");
-      return;
+      throw new Error("Error submitting ratings: " + insertError.message);
     }
 
-    await supabase
+    // Step 2: Update user completion status
+    const { error: updateError } = await supabase
       .from("users_table_round_2")
       .update({ is_completed: true })
       .eq("uid", user.id);
+    if (updateError) {
+      throw new Error("Error updating completion status: " + updateError.message);
+    }
 
+    // Step 3: Verify insert
+    const { data: verifyData, error: verifyError } = await supabase
+      .from("ratings_table_round_2")
+      .select("restaurant_id")
+      .eq("user_id", user.id);
+
+    if (verifyError) {
+      throw new Error("Verification query failed: " + verifyError.message);
+    }
+
+    if (!verifyData || verifyData.length !== 15) {
+      throw new Error("Verification failed: not all ratings were saved.");
+    }
+
+    // Step 4: Sign out and navigate
     await supabase.auth.signOut();
     navigate("/thank-you");
-  };
+
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || "There was an error saving your ratings. Please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -278,6 +346,36 @@ const FinalRatings = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Error Modal */}
+            <Dialog 
+        open={errorDialogOpen} 
+        onOpenChange={(open) => {
+          setErrorDialogOpen(open);
+          if (!open && redirectPath) {
+            navigate(redirectPath);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md w-[90%] flex flex-col items-center justify-center text-center gap-2 py-4">
+          <CircleAlert className="text-yellow-500 w-16 h-16 mx-auto" />
+          <div className="text-lg font-semibold">
+            We've detected a network issue and some of your progress may not have been saved.
+          </div>
+          <button
+            className="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
+            onClick={() => {
+              setErrorDialogOpen(false);
+              if (redirectPath) {
+                navigate(redirectPath);
+              }
+            }}
+          >
+            Ok
+          </button>
+        </DialogContent>
+      </Dialog>
+
 
       <footer className="bg-black text-white text-center py-3 mt-4 text-xs md:fixed md:bottom-0 md:left-0 md:right-0">
         <p className="text-xs">© 2025 Condé Nast India</p>
