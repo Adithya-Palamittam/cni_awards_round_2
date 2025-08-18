@@ -36,7 +36,7 @@ const ProcessDescription = () => {
               </h2>
               <p className="text-gray-700 text-[clamp(1rem,1.05rem,1.125rem)] md:text-md leading-snug">
                 The top 100 restaurants have been chosen based on ratings by 80 jury members from across 10 regions of India. 
-                Please scroll down the list–your city and beyond–and select your favourite 15.
+                Please scroll and select your favourite 15.
               </p>
             </div>
 
