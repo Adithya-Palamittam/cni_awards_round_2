@@ -93,11 +93,11 @@ const handleProceed = async () => {
             <img
               src="/logo.png"
               alt="TP Awards Logo"
-              className="mx-auto mb-4 w-[8rem] h-[8rem] md:w-[12rem] md:h-[12rem] object-contain"
+              className="mx-auto mb-4 w-[8rem] h-[8rem] md:w-[10rem] md:h-[10rem] object-contain"
             />
           </div>
 
-          <div className="space-y-3 md:space-y-6 text-center text-sm md:text-md">
+          <div className="space-y-3 md:space-y-4 text-center text-sm md:text-md">
             {/* Section 1 */}
             <div>
               <h2 className="text-base md:text-lg font-semibold text-blue-600 mb-2">The Process</h2>

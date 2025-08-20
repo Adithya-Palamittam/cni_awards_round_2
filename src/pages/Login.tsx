@@ -119,7 +119,7 @@ const Login = () => {
         </div>
 
         <div className="text-center text-xs md:text-sm text-gray-600 mt-10">
-              You have till 11:59 pm on Sunday, 31st August  to vote, sahil to update.
+              You have till 11:59 pm on Sunday, 24th August  to vote.
         </div>
       </div>
     </div>

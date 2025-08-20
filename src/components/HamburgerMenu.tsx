@@ -61,7 +61,7 @@ const HamburgerMenu = () => {
                 className="w-full justify-start px-4 py-2 text-sm hover:bg-gray-50"
               >
                 <a
-                  href="https://www.cntraveller.in/info/terms-and-conditions-tra-2025-applicant/"
+                  href="https://www.cntraveller.in/info/tra-2025-panelist-declaration-form/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center w-full h-full"

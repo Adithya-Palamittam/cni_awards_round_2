@@ -153,7 +153,8 @@ const NationalSelection = () => {
         <div className="flex-1 flex flex-col overflow-hidden px-2 md:px-4 pt-2 md:p-6 md:h-[calc(100vh-48px)]">
           <div className="flex justify-between items-center">
             <h2 className="text-sm md:text-xl md:font-semibold mb-1 text-left pr-4 md:pr-10">
-              Choose {MAX_SELECTION} restaurants from anywhere across India.
+              India’s Top 100 restaurants, sorted alphabetically. Pick your top 15
+              {/* Choose {MAX_SELECTION} restaurants from anywhere across India. */}
             </h2>
             <HamburgerMenu />
           </div>
