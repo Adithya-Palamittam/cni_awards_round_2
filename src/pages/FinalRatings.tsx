@@ -32,53 +32,72 @@ const FinalRatings = () => {
   const navigate = useNavigate();
   const { user } = useUser();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.id) return;
+useEffect(() => {
+  const fetchData = async () => {
+    if (!user?.id) return;
 
-      const { data, error } = await supabase
+    const { data, error } = await supabase
+      .from("user_selection_table_round_2")
+      .select("selected_national_restaurants, restaurant_ratings")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching selections:", error.message);
+      return;
+    }
+
+    const allRestaurants: Restaurant[] = data?.selected_national_restaurants || [];
+    const restaurantRatings: Record<string, Rating> = data?.restaurant_ratings || {};
+
+    // === Extra Rule: More than 15 ratings ===
+    if (Object.keys(restaurantRatings).length > 15) {
+      const { error: deleteError } = await supabase
         .from("user_selection_table_round_2")
-        .select("selected_national_restaurants, restaurant_ratings")
-        .eq("user_id", user.id)
-        .single();
+        .update({ restaurant_ratings: {} })
+        .eq("user_id", user.id);
 
-      if (error) {
-        console.error("Error fetching selections:", error.message);
-        return;
+      if (deleteError) {
+        console.error("Error clearing ratings:", deleteError.message);
+      } else {
+        console.log("✅ Cleared extra ratings for user", user.id);
       }
 
-      const allRestaurants: Restaurant[] = data?.selected_national_restaurants || [];
-      const restaurantRatings: Record<string, Rating> = data?.restaurant_ratings || {};
+      setRedirectPath("/rating");
+      setErrorDialogOpen(true);
+      return;
+    }
 
-      // Sort restaurants for display
-      allRestaurants.sort((a, b) => {
-        const cityCompare = a.city.localeCompare(b.city);
-        return cityCompare !== 0 ? cityCompare : a.name.localeCompare(b.name);
-      });
+    // Sort restaurants for display
+    allRestaurants.sort((a, b) => {
+      const cityCompare = a.city.localeCompare(b.city);
+      return cityCompare !== 0 ? cityCompare : a.name.localeCompare(b.name);
+    });
 
-      setRestaurants(allRestaurants);
-      setRatings(restaurantRatings);
+    setRestaurants(allRestaurants);
+    setRatings(restaurantRatings);
 
-      // === Data integrity check ===
-      const has15Restaurants = allRestaurants.length === 15;
-      const has15Ratings = Object.keys(restaurantRatings).length === 15;
+    // === Data integrity check ===
+    const has15Restaurants = allRestaurants.length === 15;
+    const has15Ratings = Object.keys(restaurantRatings).length === 15;
 
-      const anyInvalidRating = allRestaurants.some(r => {
-        const rating = restaurantRatings[r.id];
-        return !rating || rating.food < 1 || rating.service < 1 || rating.ambience < 1;
-      });
+    const anyInvalidRating = allRestaurants.some(r => {
+      const rating = restaurantRatings[r.id];
+      return !rating || rating.food < 1 || rating.service < 1 || rating.ambience < 1;
+    });
 
-      if (!has15Restaurants) {
-        setRedirectPath("/national-selection");
-        setErrorDialogOpen(true);
-      } else if (!has15Ratings || anyInvalidRating) {
-        setRedirectPath("/rating");
-        setErrorDialogOpen(true);
-      }
-    };
+    if (!has15Restaurants) {
+      setRedirectPath("/national-selection");
+      setErrorDialogOpen(true);
+    } else if (!has15Ratings || anyInvalidRating) {
+      setRedirectPath("/rating");
+      setErrorDialogOpen(true);
+    }
+  };
 
-    fetchData();
-  }, [user, navigate]);
+  fetchData();
+}, [user, navigate]);
+
 
   const handleEditRating = (restaurant: Restaurant) => {
     setEditingRestaurant(restaurant);
